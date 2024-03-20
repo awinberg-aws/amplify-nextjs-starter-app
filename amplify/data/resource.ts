@@ -11,17 +11,17 @@ const schema = a.schema({
     bathrooms: a.float().required(),
     stories: a.integer().required(),
     squareFeet: a.integer().required(),
-    hasYard: a.boolean().required
+    hasYard: a.boolean().required(),
   }).authorization([a.allow.private('iam')]),
-  // Person: a.model({
-  //   name: a.string().required(),
-  //   age: a.integer().required(),
-  //   primaryResidence: a.hasOne('House'),
-  // }).authorization([a.allow.private('iam')]),
-  // TaskList: a.model({
-  //   name: a.string().required(),
-  //   todos: a.hasMany('Todo'),
-  // }).authorization([a.allow.private('iam')]),
+  Person: a.model({
+    name: a.string().required(),
+    age: a.integer().required(),
+    primaryResidence: a.hasOne('House'),
+  }).authorization([a.allow.private('iam')]),
+  TaskList: a.model({
+    name: a.string().required(),
+    todos: a.hasMany('Todo'),
+  }).authorization([a.allow.private('iam')]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
