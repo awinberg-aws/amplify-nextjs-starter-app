@@ -8,60 +8,70 @@ specify that owners, authenticated via your Auth resource can "create",
 authenticated via an API key, can only "read" records.
 =========================================================================*/
 const schema = a.schema({
-  Todo: a
-    .model({
-      content: a.string(),
-      done: a.boolean(),
-      stringArray: a.string().array(),
-      priority: a.enum(["low", "medium", "high"]),
-      someOtherField: a.string().required(),
-      createdAt: a.datetime(),
-    })
-    .authorization([a.allow.private("iam")]),
-  BelongsToModel: a
-    .model({
-      something: a.string(),
-      todo: a.hasOne("Todo"),
-      hasOneNoBelongsToField: a.hasOne("HasOneNoBelongsTo"),
-      belongsToModelNoCompositeField: a.hasOne("BelongsToModelNoComposite"),
-      sompositeKey: a.belongsTo("SompositeKey"),
-    })
-    .authorization([a.allow.private("iam")]),
-  BelongsToModelNoComposite: a
-    .model({
-      mainField: a.string(),
-      belongsToModelField: a.belongsTo("BelongsToModel"),
-    })
-    .authorization([a.allow.private("iam")]),
-  HasOneNoBelongsTo: a
-    .model({
-      mmainField: a.string(),
-    })
-    .authorization([a.allow.private("iam")]),
-  SompositeKey: a
-    .model({
-      content: a.string(),
-      done: a.boolean(),
-      newPriority: a.enum(["low", "medium", "high"]),
-      someOtherField: a.string().required(),
-      someField: a.string().required(),
-      todos: a.hasMany("Todo"),
-      belongsToField: a.hasOne("BelongsToModel"),
-    })
-    .identifier(["someField", "someOtherField"])
-    .authorization([a.allow.specificGroup("admins"), a.allow.private("iam")]),
-  Pizza: a
-    .model({
-      content: a.string(),
-      toppings: a.manyToMany("Topping", { relationName: "PizzaToppings" }),
-    })
-    .authorization([a.allow.specificGroup("admins"), a.allow.private("iam")]),
-  Topping: a
-    .model({
-      name: a.string(),
-      pizzas: a.manyToMany("Pizza", { relationName: "PizzaToppings" }),
-    })
-    .authorization([a.allow.specificGroup("admins"), a.allow.private("iam")]),
+  // hasMany with no belongsTo (no required relationship)
+  OptionalTodo: a.model({
+    description: a.string().required(),
+    isDone: a.boolean().default(false),
+  })
+  .authorization([a.allow.private("iam")]),
+  OptionalList: a.model({
+    title: a.string().required(),
+    todos: a.hasMany('OptionalTodo')
+  })
+  .authorization([a.allow.private("iam")]),
+  
+  // hasMany with no belongsTo (parent still required)
+  RequiredTodo: a.model({
+    description: a.string().required(),
+    isDone: a.boolean().default(false),
+  })
+  .authorization([a.allow.private("iam")]),
+  RequiredList: a.model({
+    title: a.string().required(),
+    todos: a.hasMany('RequiredTodo')
+  })
+  .authorization([a.allow.private("iam")]),
+
+  // required hasOne with belongsTo
+  Car: a.model({
+    vin: a.string().required(),
+    model: a.string().required(),
+    steeringWheel: a.hasOne('SteeringWheel')
+  })
+  .authorization([a.allow.private("iam")]),
+  SteeringWheel: a.model({
+    serialNumber: a.string().required(),
+    car: a.belongsTo('Car')
+  })
+  .authorization([a.allow.private("iam")]),
+
+  // hasOne with required belongsTo
+  Airplane: a.model({
+    serial: a.string().required(),
+    model: a.string().required(),
+    inspection: a.hasOne('Inspection')
+  })
+  .authorization([a.allow.private("iam")]),
+  Inspection: a.model({
+    inspectionNumber: a.string().required(),
+    completed: a.boolean().default(false),
+    notes: a.string(),
+    outcome: a.enum(['pass', 'fail']),
+    airplane: a.belongsTo('Airplane') //.required()
+  })
+  .authorization([a.allow.private("iam")]),
+
+  // manyToMany
+  Pizza: a.model({
+    dateOrdered: a.datetime().required(),
+    toppings: a.manyToMany('Topping', {relationName: 'PizzaToppings'}),
+  })
+  .authorization([a.allow.private("iam")]),
+  Topping: a.model({
+    name: a.string().required(),
+    pizzas: a.manyToMany('Pizza', {relationName: 'PizzaToppings'}),
+  })
+  .authorization([a.allow.private("iam")]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
