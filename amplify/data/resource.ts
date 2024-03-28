@@ -74,10 +74,46 @@ const schema = a.schema({
   .authorization([a.allow.private("iam")]),
 });
 
-export type Schema = ClientSchema<typeof schema>;
+const newSchema = a.schema({
+  AllTypes: a
+    .model({
+      string: a.string(),
+      int: a.integer(),
+      float: a.float(),
+      boolean: a.boolean(),
+      date: a.date(),
+      time: a.time(),
+      datetime: a.datetime(),
+      timestamp: a.timestamp(),
+      email: a.email(),
+      json: a.json(),
+      phone: a.phone(),
+      url: a.url(),
+      ipAddress: a.ipAddress(),
+      nonModel: a.customType({
+        string: a.string(),
+        int: a.integer(),
+        float: a.float(),
+        boolean: a.boolean(),
+        date: a.date(),
+        time: a.time(),
+        datetime: a.datetime(),
+        timestamp: a.timestamp(),
+        email: a.email(),
+        json: a.json(),
+        phone: a.phone(),
+        url: a.url(),
+        ipAddress: a.ipAddress(),
+      }),
+      enum: a.enum(["some", "enum", "value"]),
+    })
+    .authorization([a.allow.owner(), a.allow.private()]),
+})
+
+export type Schema = ClientSchema<typeof newSchema>;
 
 export const data = defineData({
-  schema,
+  schema: newSchema,
   // authorizationModes: {
   //   defaultAuthorizationMode: "iam",
   // },
