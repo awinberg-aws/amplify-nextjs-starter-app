@@ -9,14 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "aws-amplify": "^6.0.1-api-v6-models.13c9b49.0",
+    "aws-amplify": "^6.0.17",
     "next": "13.5.4",
     "react": "^18",
     "react-dom": "^18"
   },
   "devDependencies": {
-    "@aws-amplify/backend": "0.0.0-test-20240319203855",
-    "@aws-amplify/backend-cli": "0.0.0-test-20240319203855",
+    "@aws-amplify/backend": "0.13.0-beta.12",
+    "@aws-amplify/backend-cli": "0.12.0-beta.14",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

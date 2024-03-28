@@ -110,10 +110,10 @@ const newSchema = a.schema({
     .authorization([a.allow.owner(), a.allow.private()]),
 })
 
-export type Schema = ClientSchema<typeof newSchema>;
+export type Schema = ClientSchema<typeof schema>;
 
 export const data = defineData({
-  schema: newSchema,
+  schema,
   // authorizationModes: {
   //   defaultAuthorizationMode: "iam",
   // },
