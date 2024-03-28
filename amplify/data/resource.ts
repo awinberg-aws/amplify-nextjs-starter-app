@@ -62,14 +62,14 @@ const schema = a.schema({
   .authorization([a.allow.private("iam")]),
 
   // manyToMany
-  Pizza: a.model({
+  Pizzam: a.model({
     dateOrdered: a.datetime().required(),
-    toppings: a.manyToMany('Topping', {relationName: 'PizzaToppingsss'}),
+    toppings: a.manyToMany('Toppingm', {relationName: 'PizzaToppingsss'}),
   })
   .authorization([a.allow.private("iam")]),
-  Topping: a.model({
+  Toppingm: a.model({
     name: a.string().required(),
-    pizzas: a.manyToMany('Pizza', {relationName: 'PizzaToppingsss'}),
+    pizzas: a.manyToMany('Pizzam', {relationName: 'PizzaToppingsss'}),
   })
   .authorization([a.allow.private("iam")]),
 });
