@@ -54,7 +54,7 @@ const schema = a.schema({
   .authorization([a.allow.private("iam")]),
   Inspection: a.model({
     inspectionNumber: a.string().required(),
-    completed: a.boolean().default(false),
+    completed: a.boolean().default(true),
     notes: a.string(),
     outcome: a.enum(['pass', 'fail']),
     airplane: a.belongsTo('Airplane') //.required()
