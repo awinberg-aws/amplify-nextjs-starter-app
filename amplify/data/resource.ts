@@ -72,9 +72,6 @@ const schema = a.schema({
     pizzas: a.manyToMany('Pizzam', {relationName: 'PizzaToppingsss'}),
   })
   .authorization([a.allow.private("iam")]),
-});
-
-const newSchema = a.schema({
   AllTypes: a
     .model({
       string: a.string(),
@@ -107,8 +104,8 @@ const newSchema = a.schema({
       }),
       enum: a.enum(["some", "enum", "value"]),
     })
-    .authorization([a.allow.owner(), a.allow.private()]),
-})
+    .authorization([a.allow.private('iam')]),
+});
 
 export type Schema = ClientSchema<typeof schema>;
 
