@@ -19,7 +19,13 @@ const schema = a.schema({
     todos: a.hasMany('OptionalTodo')
   })
   .authorization([a.allow.private("iam")]),
-  
+
+  SurveyResult: a.model({
+    question: a.string(),
+    iWantLotsOfTruesAndFalses: a.boolean().array(),
+  })
+  .authorization([a.allow.private('iam')]),
+
   // hasMany with no belongsTo (parent still required)
   RequiredTodo: a.model({
     description: a.string().required(),
