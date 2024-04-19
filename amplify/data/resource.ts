@@ -12,72 +12,65 @@ const schema = a.schema({
   OptionalTodo: a.model({
     description: a.string().required(),
     isDone: a.boolean().default(false),
-  })
-  .authorization([a.allow.private("iam")]),
+    optionalListId: a.id()
+  }),
   OptionalList: a.model({
     title: a.string().required(),
-    todos: a.hasMany('OptionalTodo')
-  })
-  .authorization([a.allow.private("iam")]),
+    todos: a.hasMany('OptionalTodo', 'optionalListId'),
+  }),
 
   SurveyResult: a.model({
     question: a.string(),
     iWantLotsOfTruesAndFalses: a.boolean().array(),
-  })
-  .authorization([a.allow.private('iam')]),
+  }),
 
   // hasMany with no belongsTo (parent still required)
   RequiredTodo: a.model({
     description: a.string().required(),
     isDone: a.boolean().default(false),
-  })
-  .authorization([a.allow.private("iam")]),
+    requiredListId: a.id(),
+  }),
   RequiredList: a.model({
     title: a.string().required(),
-    todos: a.hasMany('RequiredTodo')
-  })
-  .authorization([a.allow.private("iam")]),
+    todos: a.hasMany('RequiredTodo', 'requiredListId'),
+  }),
 
   // required hasOne with belongsTo
   Car: a.model({
     vin: a.string().required(),
     model: a.string().required(),
-    steeringWheel: a.hasOne('SteeringWheel')
-  })
-  .authorization([a.allow.private("iam")]),
+    steeringWheel: a.hasOne('SteeringWheel', 'id'),
+  }),
   SteeringWheel: a.model({
     serialNumber: a.string().required(),
-    car: a.belongsTo('Car')
-  })
-  .authorization([a.allow.private("iam")]),
+    car: a.belongsTo('Car','id'),
+  }),
 
   // hasOne with required belongsTo
   Airplane: a.model({
     serial: a.string().required(),
     model: a.string().required(),
-    inspection: a.hasOne('Inspection')
-  })
-  .authorization([a.allow.private("iam")]),
+    inspection: a.hasOne('Inspection','id'),
+  }),
   Inspection: a.model({
     inspectionNumber: a.string().required(),
     completed: a.boolean().default(true),
     notes: a.string(),
     outcome: a.enum(['pass', 'fail']),
-    airplane: a.belongsTo('Airplane') //.required()
-  })
-  .authorization([a.allow.private("iam")]),
+    airplane: a.belongsTo('Airplane', 'id') //.required()
+  }),
 
   // manyToMany
-  Pizzam: a.model({
-    dateOrdered: a.datetime().required(),
-    toppings: a.manyToMany('Toppingm', {relationName: 'PizzaToppingsss'}),
-  })
-  .authorization([a.allow.private("iam")]),
-  Toppingm: a.model({
-    name: a.string().required(),
-    pizzas: a.manyToMany('Pizzam', {relationName: 'PizzaToppingsss'}),
-  })
-  .authorization([a.allow.private("iam")]),
+  // Pizzam: a.model({
+  //   dateOrdered: a.datetime().required(),
+  //   toppings: a.manyToMany('Toppingm', {relationName: 'PizzaToppingsss'}),
+  // })
+  // .authorization([a.allow.private("iam")]),
+  // Toppingm: a.model({
+  //   name: a.string().required(),
+  //   pizzas: a.manyToMany('Pizzam', {relationName: 'PizzaToppingsss'}),
+  // })
+  // .authorization([a.allow.private("iam")]),
   AllTypes: a
     .model({
       string: a.string(),
@@ -109,8 +102,7 @@ const schema = a.schema({
         ipAddress: a.ipAddress(),
       }),
       enum: a.enum(["some", "enum", "value"]),
-    })
-    .authorization([a.allow.private('iam')]),
+    }),
 
   RequiredArrayType: a
     .model({
@@ -140,8 +132,7 @@ const schema = a.schema({
       requiredPhone: a.phone().required().array().required(),
       timestamp: a.timestamp().array().required(),
       requiredTimestamp: a.timestamp().required().array().required(),
-    })
-    .authorization([a.allow.private()]),
+    }),
   ArrayType: a
     .model({
       identifier: a.id().array(),
@@ -170,8 +161,41 @@ const schema = a.schema({
       requiredPhone: a.phone().required().array(),
       timestamp: a.timestamp().array(),
       requiredTimestamp: a.timestamp().required().array(),
-    })
-    .authorization([a.allow.private()]),
+    }),
+
+  // Relationships - manual many-to-many
+  ThingA: a.model({
+    name: a.string().required(),
+    thingBs: a.hasMany('ThingAB', 'thingAId'),
+  }),
+  ThingB: a.model({
+    name: a.string().required(),
+    thingAs: a.hasMany('ThingAB', 'thingBId'),
+  }),
+  ThingAB: a.model({
+    // two rules: 1/ a connection field (e.g. pizza) must be optional, no exceptions
+    //            2/ all reference fields (e.g. pizzaId, locationHash) must all have the same optionality 
+    thingA: a.belongsTo('ThingA', 'thingAId'),
+    thingAId: a.id().required(),
+    thingB: a.belongsTo('ThingB', 'thingBId'),
+    thingBId: a.id().required(),
+  }),
+
+  // composite key one-to-many
+  Bin: a.model({
+    name: a.string().required(),
+    contents: a.hasMany('SerializedPart', ['partNumber', 'serial']),
+  }),
+  SerializedPart: a.model({
+    partNumber: a.string().required(),
+    part: a.belongsTo('Part', 'partNumber'),
+    serial: a.string().required(),
+  }).identifier(['partNumber','serial']),
+  Part: a.model({
+    partNumber: a.string().required(),
+    name: a.string().required(),
+    description: a.string()
+  }).identifier(['partNumber'])
 });
 
 export type Schema = ClientSchema<typeof schema>;
