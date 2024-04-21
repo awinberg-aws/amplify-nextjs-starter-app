@@ -16,7 +16,7 @@ const schema = a.schema({
       long: a.float().required(),
     }),
     description: a.string()
-  })
+  }).authorization((allow) => allow.guest())
 });
 
 export type Schema = ClientSchema<typeof schema>;
